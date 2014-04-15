@@ -1,5 +1,5 @@
 #!/bin/bash
-# 2013 by Mainboarder.de
+# 2014 by Mainboarder.de
 #
 # Keep this comment untouched and do not use this software for military purposes.
 # you are allowed to use this just like you want on your own risk.
@@ -7,8 +7,10 @@
 
 path="var/customers/backups/"
 temp="var/customers/temp-backup-path/"
+sshkey="/etc/ssh/ssh_host_dsa_key"
 encryption="path/to/enc.key"
 external="user@extern.server.de"
+externalpath="/media/mountpoint/backups"
 
 # um <<tar - Entferne führende „/“ von Elementnamen>> zu vermeiden
 cd /
@@ -36,7 +38,7 @@ openssl aes-256-cbc -kfile $encryption -in backup-html-$datum.tar.gz -out ./back
 rm backup-html-$datum.tar.gz
 
 #Kopieren und verschlüsselte Datei löschen
-scp -i /etc/ssh/ssh_host_dsa_key ./backup-html-$datum.enc.tar.gz $external:/mnt/usb/backups
+scp -i $sshkey ./backup-html-$datum.enc.tar.gz $external:$externalpath
 
 rm backup-html-$datum.enc.tar.gz
 

@@ -10,9 +10,10 @@
 temp="var/customers/temp-backup-path"
 backuppath="/mnt/usb/backups"
 encryption="/path/to/enc.key"
+sshkey="/etc/ssh/ssh_host_dsa_key"
 external="user@extern.server.de"
-MYSQL_USER="root"
-MYSQL_PASSWORD="root"
+mysql_user="root"
+mysql_password="root"
 
 # Programm
 
@@ -23,11 +24,11 @@ cd /
 datum=$(date +"%d"."%m"."%y")
 
 #Datenbanken finden
-databases=`mysql -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|performance_schema|mysql)"`
+databases=`mysql -u $mysql_user -p$mysql_password -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|performance_schema|mysql)"`
 
 #Datenbanken exportieren
 for db in $databases; do
-    mysqldump -u $MYSQL_USER -p$MYSQL_PASSWORD $db > "$temp/$db.sql"
+    mysqldump -u $mysql_user -p$mysql_password $db > "$temp/$db.sql"
 done
 
 # Alle SQL-Dumps in ein Archiv packen
@@ -39,7 +40,7 @@ openssl aes-256-cbc -kfile $encryption -in $temp/../backup-sql-$datum.tar.gz -ou
 rm $temp/../backup-sql-$datum.tar.gz
 
 #Kopieren und verschlüsselte Datei löschen
-scp -i /etc/ssh/ssh_host_dsa_key $temp/backup-sql-$datum.enc.tar.gz $external:$backuppath
+scp -i $sshkey $temp/backup-sql-$datum.enc.tar.gz $external:$backuppath
 
 rm -r $temp
 mkdir $temp
