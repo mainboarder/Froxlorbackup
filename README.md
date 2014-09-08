@@ -1,12 +1,14 @@
 Froxlorbackup
 =============
 
-Backup your Froxlor Webhosting to another server. Encrypted, via ssh.
+Backup your Froxlor Webhosting (or anything else) to another server. Encrypted, via ssh.
 
-Works until version 0.9.32.
+Works for all versions.
 
-SQL works now also for Versions > 0.9.32.
-HTML is planned to be backed up with duplicity
+0. install duplicity and all required packages
+1. copy the script to the froxlorserver and run it as /$PATH/backup-server.sh full
+2. Add a cronjob like "17 2 * * * /$PATH/backup-server.sh"
+3. Let the magic happen
 
-The decrypt.sh file has just two lines. With them you can decrypt and untar your backups as long as they are back on the local storage.
-For $encrypt in this file use the same path as you do in any other file
+You can restore your data with
+duplicity $EXTERNALPATH/TO/file $INTERNALPATH/TO/file
