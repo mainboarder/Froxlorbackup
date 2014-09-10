@@ -13,6 +13,8 @@
 # you are allowed to use this just like you want on your own risk.
 #
 
+EMAIL="mail@example.com"
+
 # get day of the month
 DATE=`date +%d`
 
@@ -41,7 +43,8 @@ ENDDIR="/media/hddmount/duplicity"
 LOGDIR='/var/log/duplicity' # must exist
 
 # Setting the pass phrase to encrypt the backup files. Will use symmetrical keys in this case.
-PASSPHRASE='ult4a s3C43t!'
+# Set one Password per Backup
+PASSPHRASE=$(date|md5sum|awk '{print $1}')
 export PASSPHRASE
 
 # encryption algorithm for gpg, disable for default (CAST5)
@@ -57,7 +60,7 @@ datum=$(date +"%d"."%m"."%y")
 cd /
 
 # find all databases
-databases=`mysql -u $mysql_user -p$mysql_password -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|performance_schema|mysql)"`
+databases=`mysql -u $mysql_user -p$mysql_password -e "SHOW DATABASES;" -Nsr | grep -Ev "(information_schema|performance_schema|mysql)"`
 
 # export all databases
 for db in $databases; do
@@ -119,14 +122,17 @@ do
 
 done
 
-# Check the manpage for all available options for Duplicity.
-# Unsetting the confidential variables
-unset PASSPHRASE
-unset FTP_PASSWORD
 
 # Delete SQL Exports
 
 rm -r $temp
 mkdir $temp
+
+/usr/bin/mail -s "$(date) - $(hostname -f) - Backup complete!" $EMAIL <<< "Passphrase: ${PASSPHRASE}"
+
+# Check the manpage for all available options for Duplicity.
+# Unsetting the confidential variables
+unset FTP_PASSWORD
+unset PASSPHRASE
 
 exit 0
