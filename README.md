@@ -11,4 +11,4 @@ Works for all versions.
 3. Let the magic happen
 
 You can restore your data with
-duplicity $EXTERNALPATH/TO/file $INTERNALPATH/TO/file
+duplicity --file-to-restore neddedFile $EXTERNALPATH/TO//media/mount/duplicity/path/to/file/ /where/to/save/now
