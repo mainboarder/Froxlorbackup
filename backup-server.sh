@@ -34,6 +34,12 @@ BHOST='host.example.com'
 mysql_user="root"
 mysql_password="P4aSsw04d"
 
+# Backup iptables?
+iptables=false
+
+# Backup ip6tables?
+ip6tables=false
+
 # Temp Dir for SQL Backups (must exist)
 temp="var/customers/temp_backup"
 
@@ -53,6 +59,9 @@ ALGO=AES
 
 ##############################
 
+IPTABLESEXEC=`which iptables-save`
+IP6TABLESEXEC=`which ip6tables-save`
+
 ### MySQL Export
 # Date create
 datum=$(date +"%d"."%m"."%y")
@@ -64,8 +73,16 @@ databases=`mysql -u $mysql_user -p$mysql_password -e "SHOW DATABASES;" -Nsr | gr
 
 # export all databases
 for db in $databases; do
-    mysqldump -u $mysql_user -p$mysql_password $db > "$temp/$db.sql"
+ mysqldump -u $mysql_user -p$mysql_password $db > "$temp/$db.sql"
 done
+
+# export iptables and ip6tables
+if [ $iptables = true ]; then
+ $IPTABLESEXEC > "$temp/iptables"
+fi
+if [ $ip6tables = true ]; then
+ $IP6TABLESEXEC > "$temp/ip6tables"
+fi
 
 ### Backup
 
