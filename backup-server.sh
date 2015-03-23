@@ -50,7 +50,7 @@ LOGDIR='/var/log/duplicity' # must exist
 
 # Setting the pass phrase to encrypt the backup files. Will use symmetrical keys in this case.
 # Set one Password per Backup
-PASSPHRASE=$(date|md5sum|awk '{print $1}')
+PASSPHRASE=$(/usr/bin/openssl rand -base64 21)
 export PASSPHRASE
 
 # encryption algorithm for gpg, disable for default (CAST5)
