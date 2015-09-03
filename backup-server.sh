@@ -31,6 +31,7 @@ BHOST='host.example.com'
 #BPASSWORD='yourpass'
 
 # MySQL-root-access
+mysql_backup=false
 mysql_user="root"
 mysql_password="P4aSsw04d"
 
@@ -69,12 +70,14 @@ datum=$(date +"%d"."%m"."%y")
 cd /
 
 # find all databases
-databases=`mysql -u $mysql_user -p$mysql_password -e "SHOW DATABASES;" -Nsr | grep -Ev "(information_schema|performance_schema|mysql)"`
+if [ $mysql_backup = true ]; then
+ databases=`mysql -u $mysql_user -p$mysql_password -e "SHOW DATABASES;" -Nsr | grep -Ev "(information_schema|performance_schema|mysql)"`
 
 # export all databases
-for db in $databases; do
- mysqldump -u $mysql_user -p$mysql_password $db > "$temp/$db.sql"
-done
+ for db in $databases; do
+    mysqldump -u $mysql_user -p$mysql_password $db > "$temp/$db.sql"
+ done
+fi
 
 # export iptables and ip6tables
 if [ $iptables = true ]; then
@@ -123,9 +126,9 @@ do
 
   # first remove everything older than 1 month
   if [ $DIR = '.' ]; then
-   CMD="duplicity remove-older-than 1M -v5 $BAC/system >> $LOGDIR/system.log"
+   CMD="duplicity remove-older-than 1M -v5 --force $BAC/system >> $LOGDIR/system.log"
   else
-   CMD="duplicity remove-older-than 1M -v5 $BAC/$DIR >> $LOGDIR/$DIR.log"
+   CMD="duplicity remove-older-than 1M -v5 --force $BAC/$DIR >> $LOGDIR/$DIR.log"
   fi
   eval $CMD
 
@@ -141,9 +144,10 @@ done
 
 
 # Delete SQL Exports
-
-rm -r $temp
-mkdir $temp
+if [ $mysql_backup = true ]; then
+ rm -r $temp
+ mkdir $temp
+fi
 
 /usr/bin/mail -s "$(date) - $(hostname -f) - Backup complete!" $EMAIL <<< "Passphrase: ${PASSPHRASE}"
 
