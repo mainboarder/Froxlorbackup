@@ -87,6 +87,9 @@ if [ $ip6tables = true ]; then
  $IP6TABLESEXEC > "$temp/ip6tables"
 fi
 
+# save names of installed packages
+dpkg --get-selections | awk '!/deinstall|purge|hold/ {print $1}' > "$temp/packages.list"
+
 ### Backup
 
 if [ $ALGO ]; then
