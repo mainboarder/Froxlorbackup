@@ -51,7 +51,7 @@ LOGDIR='/var/log/duplicity' # must exist
 
 # Setting the pass phrase to encrypt the backup files. Will use symmetrical keys in this case.
 # Set one Password per Backup
-PASSPHRASE=$(/usr/bin/openssl rand -base64 21)
+PASSPHRASE=$(dd if=/dev/urandom 2>/dev/null | tr -cd '[:alnum:]' | fold -w21 | head -1)
 export PASSPHRASE
 
 # encryption algorithm for gpg, disable for default (CAST5)
